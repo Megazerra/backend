@@ -1,0 +1,5 @@
+Single-database configuration for Flask.
+
+  "name": "Juan",
+  "email": "juan@example.com",
+  "password": "securepass123"
