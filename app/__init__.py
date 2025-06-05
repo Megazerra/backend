@@ -1,33 +1,24 @@
+from datetime import timedelta
 from dotenv import load_dotenv
+from flask_cors import CORS
+
 load_dotenv()
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
-from dotenv import load_dotenv
-from flask_jwt_extended import JWTManager
-
-# Cargar variables del archivo .env
-load_dotenv()
-
-# Inicializar extensiones
-db = SQLAlchemy()
-migrate = Migrate()
-login_manager = LoginManager()
-
-jwt = JWTManager()
-# Esta función se usa por Flask-Login para cargar un usuario desde su ID
-@login_manager.user_loader
-def load_user(user_id):
-    from app.models.user import User
-    return User.query.get(int(user_id))
+from app.extensions import db, migrate, login_manager, jwt
+from config import Config
 
 def create_app():
     app = Flask(__name__)
+    app.config.from_object(Config)
+    CORS(app, supports_credentials=True, origins=["http://localhost:4200"])
 
-    # Configuración desde config.py
-    app.config.from_object('config.Config')
+    # Configuración JWT
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config['JWT_COOKIE_SECURE'] = False
+    app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=30)
 
     # Inicializar extensiones
     db.init_app(app)
@@ -35,13 +26,18 @@ def create_app():
     login_manager.init_app(app)
     jwt.init_app(app)
 
-    # Registrar Blueprints
+    # Importaciones tardías para evitar ciclos
     from app.routes.auth_routes import auth_bp
     from app.routes.product_routes import product_bp
     from app.routes.order_routes import order_bp
+    from app.auxiliar.interceptor import register_jwt_callbacks
 
+    # Registrar Blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(product_bp, url_prefix='/api/products')
     app.register_blueprint(order_bp, url_prefix='/api/orders')
+
+    # Registrar callbacks de JWT
+    register_jwt_callbacks(jwt)
 
     return app

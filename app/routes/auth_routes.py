@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt, \
+    get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
@@ -21,18 +24,19 @@ def login():
         return jsonify({"error": "Credenciales inválidas"}), 401
 
     # Crear token JWT
-    access_token = create_access_token(identity=user.id)
-
-    return jsonify({
+    access_token = create_access_token(identity=str(user.id))
+    resp = jsonify({
         "message": "Inicio de sesión exitoso",
-        "access_token": access_token,
         "user": {
             "id": user.id,
             "name": user.name,
             "email": user.email,
             "role": user.role
         }
-    }), 200
+    })
+    set_access_cookies(resp, access_token)
+
+    return resp, 200
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -56,4 +60,29 @@ def register():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'Usuario registrado exitosamente'}), 201
+    return jsonify({'message': 'Usuario registrado exitosamente'}), 200
+
+@auth_bp.route("/logout", methods=["POST"])
+def logout():
+    resp = jsonify(logout=True)
+    unset_jwt_cookies(resp)
+    return resp
+
+
+@auth_bp.route('/test', methods=['POST'])
+@jwt_required()
+def test():
+    data = request.get_json()
+    msg = data.get('msg', '')
+
+    jwt_data = get_jwt()
+    identity = get_jwt_identity()
+    exp_timestamp = jwt_data.get('exp')
+    exp_datetime = datetime.utcfromtimestamp(exp_timestamp).isoformat() + 'Z'
+
+    return jsonify({
+        'message': f'Test pasado: {msg}',
+        'user_id': identity,
+        'expires_at': exp_datetime,
+        'jwt_payload': jwt_data
+    }), 200
