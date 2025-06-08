@@ -49,11 +49,9 @@ def register():
     if not name or not email or not password:
         return jsonify({'error': 'Todos los campos son obligatorios'}), 400
 
-    # ¿El usuario ya existe?
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'El email ya está registrado'}), 409
 
-    # Crear el nuevo usuario
     hashed_password = generate_password_hash(password)
     new_user = User(name=name, email=email, password=hashed_password)
 
@@ -67,7 +65,6 @@ def logout():
     resp = jsonify(logout=True)
     unset_jwt_cookies(resp)
     return resp
-
 
 @auth_bp.route('/test', methods=['POST'])
 @jwt_required()

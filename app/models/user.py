@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask_login import UserMixin
 from app import db
 
@@ -11,7 +10,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='client')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow())
+    profile_image = db.Column(db.String(255), default='https://via.placeholder.com/150')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     orders = db.relationship('Order', backref='user', lazy=True)
     reviews = db.relationship('Review', backref='user', lazy=True)
