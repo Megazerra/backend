@@ -30,12 +30,16 @@ def create_app():
     from app.routes.auth_routes import auth_bp
     from app.routes.product_routes import product_bp
     from app.routes.order_routes import order_bp
+    from app.routes.user_routes import users_bp
+
     from app.auxiliar.interceptor import register_jwt_callbacks
 
     # Registrar Blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(product_bp, url_prefix='/api/products')
     app.register_blueprint(order_bp, url_prefix='/api/orders')
+    app.register_blueprint(users_bp, url_prefix='/api/users')
+
 
     # Registrar callbacks de JWT
     register_jwt_callbacks(jwt)

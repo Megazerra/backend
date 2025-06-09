@@ -8,9 +8,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.models import User
 
-auth_bp = Blueprint('users', __name__)
+users_bp = Blueprint('users', __name__)
 
-@auth_bp.route('/profile', methods=['GET'])
+@users_bp.route('/profile', methods=['GET'])
 @jwt_required()
 def profile():
     user_id = get_jwt_identity()
@@ -30,7 +30,7 @@ def profile():
 
     return resp, 200
 
-@auth_bp.route('/update', methods=['PUT'])
+@users_bp.route('/update', methods=['PUT'])
 @jwt_required()
 def update():
     user_id = get_jwt_identity()
@@ -61,7 +61,7 @@ def update():
 
     return jsonify({"message": "Usuario actualizado correctamente"}), 200
 
-@auth_bp.route('/delete', methods=['DELETE'])
+@users_bp.route('/delete', methods=['DELETE'])
 @jwt_required()
 def delete():
     user_id = get_jwt_identity()
