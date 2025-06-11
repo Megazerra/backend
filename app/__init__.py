@@ -13,7 +13,7 @@ def create_app():
     app.config.from_object(Config)
     CORS(app, supports_credentials=True, origins=[
         "http://localhost:4200",
-	"https://farmacia-online.uksouth.cloudapp.azure.com"
+	    "https://farmacia-online.uksouth.cloudapp.azure.com"
     ])
 
     # Configuración JWT
@@ -21,7 +21,7 @@ def create_app():
     app.config['JWT_COOKIE_SECURE'] = False
     app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=30)
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
     # Inicializar extensiones
     db.init_app(app)
