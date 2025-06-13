@@ -34,6 +34,7 @@ def create_app():
     from app.routes.product_routes import product_bp
     from app.routes.order_routes import order_bp
     from app.routes.user_routes import users_bp
+    from app.routes.cart_routes import cart_bp
 
     from app.auxiliar.interceptor import register_jwt_callbacks
 
@@ -42,6 +43,7 @@ def create_app():
     app.register_blueprint(product_bp, url_prefix='/api/products')
     app.register_blueprint(order_bp, url_prefix='/api/orders')
     app.register_blueprint(users_bp, url_prefix='/api/users')
+    app.register_blueprint(cart_bp, url_prefix='/api/cart')
 
 
     # Registrar callbacks de JWT

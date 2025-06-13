@@ -1,9 +1,6 @@
-from datetime import datetime
-
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt, \
-    get_jwt_identity
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import  jwt_required, get_jwt_identity
+from werkzeug.security import generate_password_hash
 
 from app import db
 from app.models import User
